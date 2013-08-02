@@ -1,0 +1,1 @@
+curl -X POST -H 'Content-Type: application/json' -d '{"meter_read": { "lat": 35.64, "lon": -78.51, "consumption": 4}}' http://localhost:3000/api/meter_reads.json
