@@ -41,8 +41,8 @@ window.LiveChart = class LiveChart
       width: 235,
       height: 85,
       renderer: 'line',
-      dataURL: 'data.json',
-      onData: (d) -> d[0].data[0].y = 80; d
+      dataURL: 'api/meter_reads.json',
+      onData: (d) -> [{ name: 'New York', data: d}]
       onComplete: (transport) ->
         graph = transport.graph;
         detail = new Rickshaw.Graph.HoverDetail({ graph: graph });
@@ -50,16 +50,10 @@ window.LiveChart = class LiveChart
         {
           name: 'New York',
           color: '#c05020',
-        }, {
-          name: 'London',
-          color: '#30c020',
-        }, {
-          name: 'Tokyo',
-          color: '#6060c0'
         }
       ]
     } );
 
 $ ->
-  # new LiveChart().cubism()
+  new LiveChart().cubism()
 
