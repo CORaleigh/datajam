@@ -1,59 +1,37 @@
 window.LiveChart = class LiveChart
-  cubism: ->
-    @context = cubism.context()
-                     .serverDelay(1000)
-                     .step(1000)
-                     .size(400)
+  constructor: ->
+    @duration = 2000
+    @buildChart()
+    @redraw()
 
-    @metric = @context.metric (start, stop, step, callback) ->
-      d3.json "/api/meter_reads.json", (data) ->
-        callback null, data.map (d) -> d.consumption
+  buildChart: ->
+    self = this
+    nv.addGraph =>
+      @chart = nv.models.lineChart()
+                    .x((d) -> d.date )
+                    .y((d) -> d.consumption )
+                    .color(d3.scale.category10().range())
 
-    console.log @metric
-    d3.select("#live-chart").call (div) =>
-      div.append("div")
-         .attr("class", "axis")
-         .call(@context.axis().orient("top"))
+      @chart.xAxis.tickFormat (d) ->
+        d3.time.format('%X')(new Date(d))
 
-      div.selectAll(".horizon")
-         .data([@metric])
-         .enter().append("div")
-         .attr("class", "horizon")
-         .call(@context.horizon()
-                       .height(120)
-                       .format(d3.format(".2f"))
-                       .title("My Usage"))
+      self.redraw(self.chart)
+      setInterval (-> self.redraw(self.chart)), @duration
 
-      div.append("div")
-         .attr("class", "rule")
-         .call(@context.rule())
+  redraw: (chart)->
+    d3.json "/api/meter_reads.json", (json) =>
+      values = json.map (meter_read) ->
+        date: d3.time.format("%Y-%m-%dT%X.%LZ").parse(meter_read.created_at).getTime()
+        consumption: meter_read.consumption
+      data = [{ "key": "Usage", "values": values }]
 
-    @context.on "focus", (i) ->
-      console.log i
-      format = d3.format(".1f")
-      d3.selectAll(".horizon .value").style("right", i== null ? null : @context.size() - i + "px")
-                                     .text(format(@metric.valueAt(Math.floor(i))) + "\u00B0C")
+      d3.select('#live-chart svg')
+        .datum(data)
+        .transition().duration(10)
+        .call(chart)
 
-  rickshaw: ->
-    new Rickshaw.Graph.Ajax( {
-
-      element: document.getElementById("live-chart"),
-      width: 235,
-      height: 85,
-      renderer: 'line',
-      dataURL: 'api/meter_reads.json',
-      onData: (d) -> [{ name: 'New York', data: d}]
-      onComplete: (transport) ->
-        graph = transport.graph;
-        detail = new Rickshaw.Graph.HoverDetail({ graph: graph });
-      series: [
-        {
-          name: 'New York',
-          color: '#c05020',
-        }
-      ]
-    } );
+      nv.utils.windowResize(chart.update)
 
 $ ->
-  new LiveChart().cubism()
+  window.renderedLiveChart = new LiveChart
 

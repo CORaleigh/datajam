@@ -14,6 +14,5 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require d3
-//= require cubism.v1.min
-//= require rickshaw
+//= require nv.d3
 //= require_tree .
