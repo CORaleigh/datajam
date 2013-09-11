@@ -1,17 +1,23 @@
 #map {
-  height: 500px;
-  width: 900px;
-
-  #states path {
+  width: 100%;
+}
+#states path {
     fill: rgb(103,121,155);
     stroke: #FFF;
     stroke-width: .3px;
     opacity: 100;
-  }
 }
 
 .dot {
   background: blue;
   height: 10px;
   width: 10px;
+}
+
+.jumbotron h1{
+    text-align:center;
+}
+
+#live-chart{
+    height:200px;
 }

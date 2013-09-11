@@ -3,7 +3,7 @@ window.Map = class Map
     self = this
     @projection = d3.geo.albersUsa()
     path = d3.geo.path()
-    @svg = d3.select("#map").append('svg')
+    @svg = d3.select("#map").append('svg').attr("viewBox","0 0 960 500").attr("preserveAspectRatio","xMidYMid")
     @markers = []
 
     states = @svg.append("g").attr("id", "states")
